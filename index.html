@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#17131a" />
+  <title>Шёпот судьбы — Ярмарка Шёпотов</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="intro">
+      <div class="eyebrow">ЯРМАРКА ШЁПОТОВ · ЛИЛИ-ДЕЙЛ</div>
+      <h1>Шёпот судьбы</h1>
+      <p class="subtitle">Не всякая дверь ведёт туда, куда ты собирался.</p>
+      <p class="hint">Мадам Одуванчик говорит: судьба любит тех, кто умеет нажать на кнопку вовремя.</p>
+    </section>
+
+    <section class="game-card">
+      <div class="status-row">
+        <div class="counter-wrap">
+          <span class="counter-label">Вращения на этой неделе</span>
+          <strong id="spinsLeft">3 / 3</strong>
+        </div>
+        <div class="cost-wrap">
+          <span class="counter-label">Стоимость</span>
+          <strong>🎟️ 1 билет <span class="or">или</span> 🍂 2 листа</strong>
+        </div>
+      </div>
+
+      <div class="wheel-area">
+        <div class="pointer" aria-hidden="true"></div>
+        <div class="wheel-frame">
+          <canvas id="wheel" width="720" height="720" aria-label="Колесо Фортуны"></canvas>
+          <div class="wheel-center">
+            <div class="center-rune">✦</div>
+            <div class="center-label">ШЁПОТ<br />СУДЬБЫ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="spinButton" class="spin-button" type="button">
+          <span class="button-mark">✦</span>
+          <span>КРУТИТЬ КОЛЕСО</span>
+          <span class="button-mark">✦</span>
+        </button>
+        <button id="resetButton" class="text-button" type="button">Сбросить локальный лимит</button>
+      </div>
+
+      <p id="statusText" class="status-text" role="status" aria-live="polite">Колесо ждёт того, кто осмелится спросить.</p>
+    </section>
+
+    <section id="resultPanel" class="result-panel" hidden>
+      <div class="result-kicker">ВАМ ВЫПАЛО</div>
+      <div id="resultIcon" class="result-icon">✦</div>
+      <h2 id="resultTitle">—</h2>
+      <p id="resultDescription">—</p>
+      <div id="resultMeta" class="result-meta"></div>
+      <div class="result-actions">
+        <button id="copyButton" class="copy-button" type="button">Скопировать результат</button>
+        <button id="closeResult" class="text-button" type="button">Закрыть</button>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <span>🌙</span>
+      <span>Результат генерируется локально в вашем браузере.</span>
+      <span>🌙</span>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

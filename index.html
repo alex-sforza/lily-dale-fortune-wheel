@@ -12,14 +12,14 @@
     <section class="intro">
       <div class="eyebrow">ЯРМАРКА ШЁПОТОВ · ЛИЛИ-ДЕЙЛ</div>
       <h1>Шёпот судьбы</h1>
-      <p class="subtitle">Не всякая дверь ведёт туда, куда ты собирался.</p>
-      <p class="hint">Мадам Одуванчик говорит: судьба любит тех, кто умеет нажать на кнопку вовремя.</p>
+      <p class="subtitle">Мадам Одуванчик предлагает испытать удачу.</p>
+      <p class="hint">Нажми на кнопку — автомат переберёт шёпоты, подарки и неприятности, пока не выберет один результат.</p>
     </section>
 
     <section class="game-card">
       <div class="status-row">
         <div class="counter-wrap">
-          <span class="counter-label">Вращения сегодня</span>
+          <span class="counter-label">Попытки сегодня</span>
           <strong id="spinsLeft">1 / 1</strong>
         </div>
         <div class="cost-wrap">
@@ -28,31 +28,33 @@
         </div>
       </div>
 
-      <div class="wheel-area">
-        <div class="pointer" aria-hidden="true"></div>
-        <div class="wheel-frame">
-          <canvas id="wheel" width="720" height="720" aria-label="Колесо Фортуны"></canvas>
-          <div class="wheel-center">
-            <div class="center-rune">✦</div>
-            <div class="center-label">ШЁПОТ<br />СУДЬБЫ</div>
-          </div>
+      <div class="machine-shell">
+        <div class="machine-sign">✦ АВТОМАТ СУДЬБЫ ✦</div>
+        <div class="machine-window" aria-live="polite">
+          <div class="window-glow"></div>
+          <div id="machineIcon" class="machine-icon">✦</div>
+          <div id="machineTitle" class="machine-title">ШЁПОТ СУДЬБЫ</div>
+          <div id="machineCategory" class="machine-category">НАЖМИ НА КНОПКУ</div>
+        </div>
+        <div class="machine-lights" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         </div>
       </div>
 
       <div class="controls">
         <button id="spinButton" class="spin-button" type="button">
           <span class="button-mark">✦</span>
-          <span>КРУТИТЬ КОЛЕСО</span>
+          <span>ИСПЫТАТЬ УДАЧУ</span>
           <span class="button-mark">✦</span>
         </button>
         <button id="resetButton" class="text-button" type="button">Сбросить локальный лимит</button>
       </div>
 
-      <p id="statusText" class="status-text" role="status" aria-live="polite">Колесо ждёт того, кто осмелится спросить.</p>
+      <p id="statusText" class="status-text" role="status">Автомат ждёт монетку и немного безрассудства.</p>
     </section>
 
     <section id="resultPanel" class="result-panel" hidden>
-      <div class="result-kicker">ВАМ ВЫПАЛО</div>
+      <div class="result-kicker">АВТОМАТ ВЫБРАЛ</div>
       <div id="resultIcon" class="result-icon">✦</div>
       <h2 id="resultTitle">—</h2>
       <p id="resultDescription">—</p>
@@ -64,13 +66,9 @@
     </section>
 
     <footer class="footer-note">
-      <span>🌙</span>
-      <span>Результат генерируется локально в вашем браузере.</span>
-      <span>🌙</span>
+      <span>🌙</span><span>Результат генерируется локально в вашем браузере.</span><span>🌙</span>
     </footer>
   </main>
-
   <script src="script.js"></script>
-  <script src="collections.js"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
-const wheel = document.getElementById('wheel');
-const ctx = wheel.getContext('2d');
+const gameCard = document.querySelector('.game-card');
+const machineIcon = document.getElementById('machineIcon');
+const machineTitle = document.getElementById('machineTitle');
+const machineCategory = document.getElementById('machineCategory');
 const spinButton = document.getElementById('spinButton');
 const resetButton = document.getElementById('resetButton');
 const spinsLeftEl = document.getElementById('spinsLeft');
@@ -14,8 +16,6 @@ const closeResult = document.getElementById('closeResult');
 
 const DAILY_LIMIT = 1;
 const STORAGE_KEY = 'lilyDaleFortuneWheelStateV2';
-const TAU = Math.PI * 2;
-let rotation = 0;
 let isSpinning = false;
 let lastResult = null;
 
@@ -109,33 +109,10 @@ const prizes = [
   {title:'Неизвестный подарок',icon:'❔',category:'Случайность',description:'АМС сообщает приз позже. До раскрытия игрок знает только, что Колесо выбрало его намеренно.'},
   {title:'«Мадам Одуванчик остановила колесо рукой»',icon:'🌻',category:'Особый',description:'Специальный сюжетный результат. АМС может использовать его для неожиданного короткого события.'},
   {title:'Случайный предмет магазинчика',icon:'🎁',category:'Случайность',description:'АМС случайным образом выбирает один доступный предмет из магазинчика.'},
-  {title:'Малый осколок теневого зеркала',icon:'🔮',category:'Редкий',description:'Можно обменять на один фрагмент ключа или использовать для одного видения возможного будущего.'}
+  {title:'Музыкальная коллекция',icon:'💿',category:'Коллекция',description:'Один предмет Музыкальной коллекции.'}
 ];
 
-if (prizes.length !== 100) console.warn('Колесо должно содержать ровно 100 секторов. Сейчас:', prizes.length);
-
-const categoryStyles = {
-  'Валюта':{fill:'#80613b',text:'#f2ddae'},'Обычный':{fill:'#4f4a42',text:'#eadfc9'},'Хранитель':{fill:'#536357',text:'#e2efd9'},
-  'Разрушитель':{fill:'#633540',text:'#f1c6cf'},'Трикстер':{fill:'#63516d',text:'#ead8f3'},'Инструмент':{fill:'#575f64',text:'#dbe4e6'},
-  'Бонус':{fill:'#7b5c30',text:'#f5dfb3'},'Редкий':{fill:'#69554e',text:'#f0d9c9'},'Очень редкий':{fill:'#4c3e55',text:'#eadbf3'},
-  'Эксклюзив':{fill:'#7a4f3f',text:'#f5decf'},'Шутка':{fill:'#6e5940',text:'#f3e2be'},'Шёпот':{fill:'#403849',text:'#ddd1ee'},
-  'Случайность':{fill:'#6a624c',text:'#f0e4bf'},'Особый':{fill:'#7a6b43',text:'#f5eac4'}
-};
-
-function drawWheel(){
-  const dpr=window.devicePixelRatio||1,size=wheel.clientWidth||720,px=Math.round(size*dpr);
-  if(wheel.width!==px||wheel.height!==px){wheel.width=px;wheel.height=px;}
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  const cx=size/2,cy=size/2,r=size*.475,segment=TAU/prizes.length;
-  ctx.clearRect(0,0,size,size);ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);
-  for(let i=0;i<prizes.length;i++){
-    const start=-Math.PI/2+i*segment,end=start+segment,style=categoryStyles[prizes[i].category]||categoryStyles['Обычный'];
-    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,r,start,end);ctx.closePath();ctx.fillStyle=style.fill;ctx.fill();
-    ctx.strokeStyle='rgba(232,221,200,.13)';ctx.lineWidth=Math.max(.7,size/900);ctx.stroke();
-  }
-  ctx.beginPath();ctx.arc(0,0,r*.94,0,TAU);ctx.strokeStyle='rgba(224,201,149,.4)';ctx.lineWidth=Math.max(2,size/150);ctx.stroke();
-  ctx.beginPath();ctx.arc(0,0,r*.28,0,TAU);ctx.fillStyle='#18131a';ctx.fill();ctx.strokeStyle='rgba(224,201,149,.48)';ctx.lineWidth=Math.max(1.5,size/260);ctx.stroke();ctx.restore();
-}
+if (prizes.length !== 100) console.warn('Таблица автомата должна содержать ровно 100 исходов. Сейчас:', prizes.length);
 
 function dateKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function readState(){
@@ -145,28 +122,44 @@ function saveState(s){localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}
 function availableSpins(){const s=readState();return DAILY_LIMIT+s.bonus-s.used;}
 function updateCounter(){spinsLeftEl.textContent=`${Math.max(0,availableSpins())} / ${DAILY_LIMIT + readState().bonus}`;spinButton.disabled=isSpinning||availableSpins()<=0;}
 function formatDate(d){return new Intl.DateTimeFormat('ru-RU',{dateStyle:'short',timeStyle:'medium'}).format(d);}
-function pickPrize(){return prizes[Math.floor(Math.random()*prizes.length)];}
 function showResult(prize,stamp){
   lastResult={prize,stamp};resultIcon.textContent=prize.icon;resultTitle.textContent=prize.title;resultDescription.textContent=prize.description;
   resultMeta.textContent=`${prize.category} · ${formatDate(stamp)}`;resultPanel.hidden=false;
-  statusText.textContent='Колесо сказало своё слово.';
+  statusText.textContent='Автомат выбрал результат.';
+}
+function renderMachine(prize){
+  machineIcon.textContent=prize.icon;
+  machineTitle.textContent=prize.title;
+  machineCategory.textContent=prize.category;
 }
 function spin(){
   if(isSpinning||availableSpins()<=0)return;
-  isSpinning=true;updateCounter();resultPanel.hidden=true;statusText.textContent='Колесо слушает шёпот…';
-  const index=Math.floor(Math.random()*prizes.length),segment=TAU/prizes.length;
-  const target=-index*segment-(segment/2);let current=rotation%TAU;if(current<0)current+=TAU;
-  let delta=target-current;if(delta<0)delta+=TAU;delta+=TAU*(5+Math.floor(Math.random()*3));
-  const start=rotation,end=rotation+delta,duration=5600+Math.random()*1400,t0=performance.now();
-  function frame(now){const p=Math.min(1,(now-t0)/duration),e=1-Math.pow(1-p,4);rotation=start+(end-start)*e;drawWheel();if(p<1){requestAnimationFrame(frame);}else{
-      rotation=end;drawWheel();const stamp=new Date(),state=readState();state.used++;state.history.push({date:stamp.toISOString(),title:prizes[index].title});state.history=state.history.slice(-30);
-      const extra=prizes[index].title==='+2 дополнительных вращения';if(extra)state.bonus+=2;saveState(state);isSpinning=false;updateCounter();showResult(prizes[index],stamp);
-    }}requestAnimationFrame(frame);
+  isSpinning=true;updateCounter();resultPanel.hidden=true;gameCard.classList.add('running');
+  statusText.textContent='Автомат перебирает возможные судьбы…';
+  const finalPrize=prizes[Math.floor(Math.random()*prizes.length)];
+  const started=performance.now();
+  let delay=70,last=0;
+  function tick(now){
+    const elapsed=now-started;
+    if(now-last>=delay){
+      renderMachine(prizes[Math.floor(Math.random()*prizes.length)]);
+      last=now;
+      if(elapsed>1800)delay=120;
+      if(elapsed>3000)delay=190;
+      if(elapsed>4100)delay=300;
+    }
+    if(elapsed<5000){requestAnimationFrame(tick);return;}
+    renderMachine(finalPrize);
+    const stamp=new Date(),state=readState();
+    state.used++;state.history.push({date:stamp.toISOString(),title:finalPrize.title});state.history=state.history.slice(-30);
+    if(finalPrize.title==='+2 дополнительных вращения')state.bonus+=2;
+    saveState(state);isSpinning=false;gameCard.classList.remove('running');updateCounter();showResult(finalPrize,stamp);
+  }
+  requestAnimationFrame(tick);
 }
 
 spinButton.addEventListener('click',spin);
 resetButton.addEventListener('click',()=>{localStorage.removeItem(STORAGE_KEY);updateCounter();statusText.textContent='Локальный лимит сброшен. Это предназначено только для тестирования.';});
 closeResult.addEventListener('click',()=>resultPanel.hidden=true);
-copyButton.addEventListener('click',async()=>{if(!lastResult)return;const p=lastResult.prize;text=`🍂 Шёпот судьбы\n\nСегодня я прокрутил(а) Колесо Фортуны.\n\nВыпало: ${p.icon} ${p.title}\n${p.description}\n\nДата и время: ${formatDate(lastResult.stamp)}`;try{await navigator.clipboard.writeText(text);copyButton.textContent='Скопировано ✓';setTimeout(()=>copyButton.textContent='Скопировать результат',1800);}catch{copyButton.textContent='Не удалось скопировать';setTimeout(()=>copyButton.textContent='Скопировать результат',1800);}});
-window.addEventListener('resize',drawWheel);
-drawWheel();updateCounter();
+copyButton.addEventListener('click',async()=>{if(!lastResult)return;const p=lastResult.prize;text=`🍂 Шёпот судьбы\n\nСегодня я испытал(а) удачу в автомате «Шёпот судьбы».\n\nВыпало: ${p.icon} ${p.title}\n${p.description}\n\nДата и время: ${formatDate(lastResult.stamp)}`;try{await navigator.clipboard.writeText(text);copyButton.textContent='Скопировано ✓';setTimeout(()=>copyButton.textContent='Скопировать результат',1800);}catch{copyButton.textContent='Не удалось скопировать';setTimeout(()=>copyButton.textContent='Скопировать результат',1800);}});
+updateCounter();
